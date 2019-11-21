@@ -1,5 +1,5 @@
 <?php
-namespace app\components\db;
+namespace sky\yii\db;
 
 use yii\base\ModelEvent;
 use yii\helpers\ArrayHelper;
@@ -172,15 +172,6 @@ class ActiveRecord extends \yii\db\ActiveRecord
     }
     
     public function afterValidate() {
-        if (YII_DEBUG && $this->getErrors()) {
-            Yii::$app->message->sendText(static::class, [
-                'attachments' => [
-                    [
-                        'text' => json_encode($this->getErrors()),
-                    ]
-                ],
-            ]);
-        }
         return parent::afterValidate();
     }
 }
