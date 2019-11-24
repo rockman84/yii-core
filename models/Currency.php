@@ -11,11 +11,13 @@ use app\components\helpers\StringHelper;
  *
  * @property int $id
  * @property string $name
- * @property string $iso3
+ * @property string $code
  * @property string $symbol
- * @property string $rate
- * @property string $decimal
+ * @property number $rate
+ * @property string $decimal_point
  * @property string $thousand_separator
+ * @property string $prefix
+ * @property string $suffix
  * @property int $status
  * @property int $weight
  * @property int $rate_updated_at
@@ -25,7 +27,7 @@ use app\components\helpers\StringHelper;
  * @property string $format
  * @property string $sortFormat
  */
-class Currency extends \app\components\db\BaseActiveRecord
+class Currency extends \sky\yii\db\ActiveRecord
 {
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
@@ -38,7 +40,7 @@ class Currency extends \app\components\db\BaseActiveRecord
     
     static $_cache;
     
-    const DEFAULT_CURRENCY_ISO = 'USD';
+    const DEFAULT_CURRENCY_CODE = 'USD';
     
     /**
      * {@inheritdoc}
@@ -54,13 +56,14 @@ class Currency extends \app\components\db\BaseActiveRecord
     public function rules()
     {
         return [
-            [['name', 'iso3'], 'required'],
+            [['name', 'code'], 'required'],
             [['rate', 'value'], 'number'],
             [['status', 'weight', 'rate_updated_at', 'updated_at', 'created_at'], 'integer'],
-            [['name', 'iso3', 'symbol'], 'string', 'max' => 255],
-            [['decimal', 'thousand_separator'], 'string', 'max' => 1],
+            [['name', 'symbol', 'prefix', 'suffix'], 'string', 'max' => 255],
+            [['code'], 'string', 'max' => 3],
+            [['decimal_point', 'thousand_separator'], 'string', 'max' => 1],
             [['name'], 'unique'],
-            [['iso3'], 'unique'],
+            [['code'], 'unique'],
         ];
     }
 
@@ -72,10 +75,10 @@ class Currency extends \app\components\db\BaseActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Name',
-            'iso3' => 'Iso3',
+            'code' => 'Code',
             'symbol' => 'Symbol',
             'rate' => 'Rate',
-            'decimal' => 'Decimal',
+            'decimal_point' => 'Decimal',
             'thousand_separator' => 'Thousand Separator',
             'status' => 'Status',
             'weight' => 'Weight',
@@ -85,17 +88,17 @@ class Currency extends \app\components\db\BaseActiveRecord
         ];
     }
     
-    public static function findByIso($iso, $cache = false)
+    public static function findByCode($code, $cache = false)
     {
-        if (!isset(static::$_cache[$iso]) || !$cache) {
-            static::$_cache[$iso] = static::findOne(['iso3' => ucwords($iso)]);
+        if (!isset(static::$_cache[$code]) || !$cache) {
+            static::$_cache[$code] = static::findOne(['code' => ucwords($code)]);
         }
-        return static::$_cache[$iso];
+        return static::$_cache[$code];
     }
     
     public function getFormat($decimals = 0, $template = '{prefix} {symbol} {value} {suffix}')
     {
-        $value = number_format($this->value, $decimals, $this->decimal, $this->thousand_separator);
+        $value = number_format($this->value, $decimals, $this->decimal_point, $this->thousand_separator);
         return StringHelper::replace($template, $this->getParams($value));
     }
     
@@ -128,17 +131,17 @@ class Currency extends \app\components\db\BaseActiveRecord
         return $this;
     }
     
-    public static function convert(Currency $isoForm, Currency $iso, $value)
+    public static function convert(Currency $codeForm, Currency $code, $value)
     {
-        if ($isoForm->id == $iso->id) {
+        if ($codeForm->id == $code->id) {
             return $value;
         }
-        return ($iso->rate / $isoForm->rate) * $value;
+        return ($code->rate / $codeForm->rate) * $value;
     }
     
     public static function getDefaultCurrency()
     {
-        $model = static::findByIso(static::DEFAULT_CURRENCY_ISO);
+        $model = static::findByIso(static::DEFAULT_CURRENCY_CODE);
         if (!$model) {
             throw new \yii\db\IntegrityException("Default Currency Not Found");
         }
@@ -147,26 +150,26 @@ class Currency extends \app\components\db\BaseActiveRecord
     
     /**
      * convert currency value
-     * @param \app\models\Currency|string $iso
+     * @param \app\models\Currency|string $code
      * @param number $value
      * @return \app\models\Currency|null
      */
-    public function convertTo($iso, $value = null)
+    public function convertTo($code, $value = null)
     {
-        if (($iso instanceof Currency) && $this->id == $iso->id) {
-            $iso->value = $value;
-            return $iso;
+        if (($code instanceof Currency) && $this->id == $code->id) {
+            $code->value = $value;
+            return $code;
         }
-        if (is_string($iso)) {
-            if ($iso == $this->iso3) {
+        if (is_string($code)) {
+            if ($code == $this->code) {
                 return $this;
             }
-            $iso = static::findByIso($iso);
+            $code = static::findByCode($code);
         }        
-        if ($iso) {
+        if ($code) {
             $this->value = $value !== null ? $value : $this->value;
-            $iso->value = static::convert($this, $iso, $this->value);
-            return $iso;
+            $code->value = static::convert($this, $code, $this->value);
+            return $code;
         }
         return $this;
     }

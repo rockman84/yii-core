@@ -15,7 +15,7 @@ use sky\yii\storage\UploadedStorage;
  */
 class StorageGoogle extends \sky\yii\storage\StorageLocal
 {
-    public $fileJsonKey = '@app/config/CASAINDO-839e7155ba44.json';
+    public $fileJsonKey = '@app/config/key.json';
     
     public $bucketName = 'bucket';
     
