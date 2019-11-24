@@ -1,0 +1,31 @@
+{
+    "name": "sky/yiisoft",
+    "description": "Yii2 starter components pack",
+    "type": "extension",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+                "name": "Hansen Wong",
+                "email": "huanghanzen@gmail.com",
+                "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/rockman84/yii2-slack-client/issues",
+        "source": "https://github.com/rockman84/yii2-slack-client"
+    },
+    "require": {
+        "php": ">=7.0.0",
+        "yiisoft/yii2": "~2.0.0",
+        "yiisoft/yii2-httpclient": "^2.0.0",
+        "yiisoft/yii2-bootstrap4": "~2.0.6",
+        "yiisoft/yii2-queue": "^2.3",
+        "sky/yii2-slack-client": "~1.0.0",
+        "kartik-v/yii2-widgets": "*"
+    },
+    "autoload": {
+      "psr-4": {
+        "sky\\yii\\": ""
+      }
+    }
+}
