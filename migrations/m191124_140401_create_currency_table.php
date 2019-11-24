@@ -1,7 +1,6 @@
 <?php
 
 use yii\db\Migration;
-use Yii;
 /**
  * Handles the creation of table `{{%currency}}`.
  */

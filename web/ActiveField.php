@@ -3,8 +3,7 @@ namespace sky\yii\web;
 
 use yii\helpers\ArrayHelper;
 use app\models\Currency;
-use yii\validators\RequiredValidator;
-use app\components\web\Html;
+use yii\bootstrap4\Html;
 use kartik\select2\Select2;
 use kartik\money\MaskMoney;
 use kartik\date\DatePicker;

@@ -10,7 +10,6 @@ use yii\behaviors\TimestampBehavior;
  * This is the model class for table "user".
  *
  * @property int $id
- * @property string $username
  * @property string $auth_key
  * @property string $email
  * @property string $email_verification
@@ -71,19 +70,12 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
                 return strtolower($value);
             }],
             [['email'], 'email'],
-            [['access_token', 'user_agent'], 'string'],
+            [['access_token', 'user_agent'], 'string', 'max' => 255],
             [['token_expiry'], 'integer'],
             [['login_attempt', 'type', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['username', 'email', 'email_verification', 'password_hash', 'password_reset_token'], 'string', 'max' => 255],
+            [['email', 'email_verification', 'password_hash', 'password_reset_token'], 'string', 'max' => 255],
             [['status'], 'default', 'value' => static::STATUS_NOT_VERIFICATION],
             [['type'], 'default', 'value' => static::TYPE_NORMAL],
-            [['type', 'username'], function ($attribute) {
-                if (in_array($this->type, [static::TYPE_ADMIN, static::TYPE_GOD])) {
-                    if (!Yii::$app->user->isGuest && !Yii::$app->user->identity->type == static::TYPE_GOD) {
-                        return $this->addError($attribute, 'Forbbiden User Type');
-                    }
-                }
-            }],
             [['username', 'email', 'access_token'], 'unique'],
         ];
     }

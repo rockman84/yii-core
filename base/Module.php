@@ -1,5 +1,5 @@
 <?php
-namespace sky\yii\core;
+namespace sky\yii\base;
 
 class Module extends \yii\base\Module
 {

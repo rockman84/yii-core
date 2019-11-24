@@ -2,7 +2,7 @@
 namespace sky\yii\web;
 
 use Yii;
-use app\components\form\ActiveForm;
+use sky\yii\web\ActiveForm;
 use yii\web\Response;
 use yii\base\Model;
 
