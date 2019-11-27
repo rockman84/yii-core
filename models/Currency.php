@@ -3,8 +3,8 @@
 namespace sky\yii\models;
 
 use Yii;
-use app\components\helpers\CurrencyFormat;
-use app\components\helpers\StringHelper;
+use sky\yii\helpers\Inflector;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "currency".
@@ -48,6 +48,12 @@ class Currency extends \sky\yii\db\ActiveRecord
     public static function tableName()
     {
         return 'currency';
+    }
+    
+    public function behaviors() {
+        return array_merge(parent::behaviors(), [
+            TimestampBehavior::class,
+        ]);
     }
 
     /**
@@ -99,13 +105,7 @@ class Currency extends \sky\yii\db\ActiveRecord
     public function getFormat($decimals = 0, $template = '{prefix} {symbol} {value} {suffix}')
     {
         $value = number_format($this->value, $decimals, $this->decimal_point, $this->thousand_separator);
-        return StringHelper::replace($template, $this->getParams($value));
-    }
-    
-    public function getSortFormat($template = '{prefix} {symbol} {value} {suffix}')
-    {
-        $value = CurrencyFormat::shortValue($this->value);
-        return StringHelper::replace($template, $this->getParams($value));
+        return Inflector::replace($template, $this->getParams($value));
     }
     
     protected function getParams($value)
@@ -116,18 +116,6 @@ class Currency extends \sky\yii\db\ActiveRecord
     public function setValue($value)
     {
         $this->value = $value;
-        return $this;
-    }
-    
-    public function setPrefix($text)
-    {
-        $this->prefix = $text;
-        return $this;
-    }
-    
-    public function setSuffix($text)
-    {
-        $this->suffix = $text;
         return $this;
     }
     

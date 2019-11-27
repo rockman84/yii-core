@@ -30,6 +30,7 @@ use yii\behaviors\TimestampBehavior;
  * @property boolean $isOwner
  * @property boolean $isActive
  * @property boolean $isAccessTokenExpired
+ * @property TmpForm[] $tmpForm
  */
 class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
@@ -108,15 +109,11 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
         return $this->hasOne(UserProfile::class, ['user_id' => 'id']);
     }
     
-    public function getUserReward()
+    public function getTmpForm()
     {
-        return $this->hasMany(UserReward::class, ['user_id' => 'id']);
+        return $this->hasMany(TmpForm::class, ['user_id' => 'id']);
     }
     
-    public function getActiveUserReward()
-    {
-        return $this->getUserReward()->andWhere(['status' => UserReward::STATUS_ACTIVE]);
-    }
 
     /**
      * {@inheritdoc}
