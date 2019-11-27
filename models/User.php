@@ -38,6 +38,7 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
     
     const STATUS_ACTIVE = 1;
     const STATUS_NOT_VERIFICATION = 10;
+    const STATUS_INACTIVE = 0;
     
     const TYPE_NORMAL = 1;
     const TYPE_ADMIN = 99;
