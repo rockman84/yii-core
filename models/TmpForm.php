@@ -14,6 +14,7 @@ use yii\base\Model;
  * @property int|null $user_id
  * @property resource $model_form
  * @property string|null $class_name
+ * @property int $ref_id
  * @property string $session
  * @property string $return_url
  * @property int|null $created_at
@@ -21,6 +22,8 @@ use yii\base\Model;
  *
  * @property User $user
  * @property Model $model
+ * @property bool $isOwner
+ * @property bool $isActiveRecord
  */
 class TmpForm extends \sky\yii\db\ActiveRecord
 {
@@ -47,8 +50,13 @@ class TmpForm extends \sky\yii\db\ActiveRecord
             
             [['key'], 'default', 'value' => function () { return Yii::$app->security->generateRandomString(); }],
             [['user_id'], 'default', 'value' => function () { return Yii::$app->user->id; }],
+            [['ref_id'], 'default', 'value' => function ($model) {
+                if ($model->isActiveRecord && !$model->model->isNewRecord) {
+                    return $model->model->id;
+                }
+            }],
             [['key', 'model_form'], 'required'],
-            [['user_id', 'created_at', 'updated_at'], 'integer'],
+            [['user_id', 'ref_id', 'created_at', 'updated_at'], 'integer'],
             [['model_form', 'session', 'url_return'], 'string'],
             [['key', 'class_name'], 'string', 'max' => 255],
             [['key'], 'unique'],
@@ -89,6 +97,24 @@ class TmpForm extends \sky\yii\db\ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOriginModel()
+    {
+        return $this->hasOne($this->class_name, ['id' => 'ref_id']);
+    }
+    
+    public function getIsOwner()
+    {
+        return $this->user_id == Yii::$app->user->id;
+    }
+    
+    public function getIsActiveRecord()
+    {
+        return $this->model instanceof \yii\db\ActiveRecord;
     }
     
     public static function findByKey($key)

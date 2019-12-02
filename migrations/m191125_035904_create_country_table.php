@@ -24,6 +24,47 @@ class m191125_035904_create_country_table extends Migration
             'created_at' => $this->integer()->unsigned()->defaultValue(null),
             'updated_at' => $this->integer()->unsigned()->defaultValue(null),
         ]);
+        
+        foreach ($this->data() as $data) {
+            $this->insert('{{%country}}', array_merge([
+                'created_at' => time(),
+                'updated_at' => time(),
+            ], $data));
+        }
+    }
+    
+    public function data()
+    {
+        return [
+            [
+                'name' => 'Indonesia',
+                'iso' => 'ID',
+                'iso3' => 'IDN',
+                'currency_id' => 1,
+                'phone_code' => '+62',
+            ],
+            [
+                'name' => 'Singapore',
+                'iso' => 'SG',
+                'iso3' => 'SGP',
+                'currency_id' => 2,
+                'phone_code' => '+65',
+            ],
+            [
+                'name' => 'United State',
+                'iso' => 'US',
+                'iso3' => 'USA',
+                'currency_id' => 3,
+                'phone_code' => '+1',
+            ],
+            [
+                'name' => 'Malaysia',
+                'iso' => 'MY',
+                'iso3' => 'MYS',
+                'currency_id' => 4,
+                'phone_code' => '+60',
+            ],
+        ];
     }
 
     /**

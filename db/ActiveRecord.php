@@ -174,4 +174,9 @@ class ActiveRecord extends \yii\db\ActiveRecord
     public function afterValidate() {
         return parent::afterValidate();
     }
+    
+    public static function findLast()
+    {
+        return static::find()->orderBy(['id' => SORT_DESC])->one();
+    }
 }

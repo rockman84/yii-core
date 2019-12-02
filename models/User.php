@@ -12,24 +12,19 @@ use yii\behaviors\TimestampBehavior;
  * @property int $id
  * @property string $auth_key
  * @property string $email
- * @property string $email_verification
- * @property string $access_token
- * @property int $token_expiry
+ * @property string $email_verification_token
+ * @property string $auth_key
  * @property string $ip_address
  * @property string $user_agent
  * @property string $password_hash
  * @property string $password_reset_token
  * @property int $login_attempt
- * @property int $type
  * @property int $status
  * @property int $created_at
  * @property int $updated_at
  *
- * @property boolean #isGod
- * @property boolean $isAdmin
  * @property boolean $isOwner
  * @property boolean $isActive
- * @property boolean $isAccessTokenExpired
  * @property TmpForm[] $tmpForm
  */
 class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterface
@@ -39,13 +34,6 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
     const STATUS_ACTIVE = 1;
     const STATUS_NOT_VERIFICATION = 10;
     const STATUS_INACTIVE = 0;
-    
-    const TYPE_NORMAL = 1;
-    const TYPE_ADMIN = 99;
-    const TYPE_GOD = 100;
-    
-    const ACTION_CREATE_CAMPAIGN = 'createCampaign';
-    const ACTION_CREATE_AGENT = 'createAgent';
 
     /**
      * {@inheritdoc}
@@ -72,13 +60,11 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
                 return strtolower($value);
             }],
             [['email'], 'email'],
-            [['access_token', 'user_agent'], 'string', 'max' => 255],
-            [['token_expiry'], 'integer'],
-            [['login_attempt', 'type', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['email', 'email_verification', 'password_hash', 'password_reset_token'], 'string', 'max' => 255],
+            [['user_agent'], 'string', 'max' => 255],
+            [['login_attempt', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['email', 'email_verification_token', 'password_hash', 'password_reset_token'], 'string', 'max' => 255],
             [['status'], 'default', 'value' => static::STATUS_NOT_VERIFICATION],
-            [['type'], 'default', 'value' => static::TYPE_NORMAL],
-            [['username', 'email', 'access_token'], 'unique'],
+            [['email', 'auth_key'], 'unique'],
         ];
     }
 
@@ -89,13 +75,11 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
     {
         return [
             'id' => 'ID',
-            'username' => 'Username',
             'email' => 'Email',
-            'email_verification' => 'Email Verification',
+            'email_verification_token' => 'Email Verification',
             'password_hash' => 'Password Hash',
             'password_reset_token' => 'Password Reset Token',
             'login_attempt' => 'Login Attempt',
-            'type' => 'User Type',
             'status' => 'Status',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
@@ -129,8 +113,9 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
+        return $token;
         if ($token) {
-            $user = static::findOne(['access_token' => $token]);
+            $user = static::findOne(['auth_key' => $token]);
             if ($user && !$user->isAccessTokenExpired) {
                 return $user;
             }
@@ -140,14 +125,8 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
     
     public function generateAccessToken()
     {
-        $this->access_token = Yii::$app->security->generateRandomString();
-        $this->token_expiry = time() + 7600;
+        $this->auth_key = Yii::$app->security->generateRandomString();
         return $this;
-    }
-    
-    public function getIsAccessTokenExpired()
-    {
-        return $this->token_expiry < time();
     }
 
     /**
@@ -197,7 +176,7 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
     
     public function generateEmailVerification()
     {
-        $this->email_verification = Yii::$app->security->generateRandomString();
+        $this->email_verification_token = Yii::$app->security->generateRandomString();
     }
     
     public function generateAuthKey()
@@ -215,16 +194,6 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
             $this->save();
         }
         return $isLogin;
-    }
-    
-    public function getIsGod()
-    {
-        return $this->status == static::TYPE_GOD;
-    }
-    
-    public function getIsAdmin()
-    {
-        return in_array($this->type, [static::TYPE_ADMIN, static::TYPE_GOD]);
     }
     
     public function getIsOwner()

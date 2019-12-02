@@ -27,6 +27,19 @@ class m191121_105803_create_user_table extends Migration
             'created_at' => $this->integer()->unsigned()->defaultValue(null),
             'updated_at' => $this->integer()->unsigned()->defaultValue(null),
         ]);
+        
+        $this->insert('{{%user}}', [
+            'email' => 'root@administrator.com',
+            'password_hash' => Yii::$app->security->generatePasswordHash('asdkhu1792yhd19878dashd93'),
+            'created_at' => time(),
+            'updated_at' => time(),
+        ]);
+        $this->insert('{{%user}}', [
+            'email' => 'admin@admin.com',
+            'password_hash' => Yii::$app->security->generatePasswordHash('admin'),
+            'created_at' => time(),
+            'updated_at' => time(),
+        ]);
     }
 
     /**

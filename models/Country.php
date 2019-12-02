@@ -20,7 +20,7 @@ use yii\behaviors\TimestampBehavior;
  * 
  * @property Currency $currency
  */
-class Country extends \yii\db\ActiveRecord
+class Country extends \sky\yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}

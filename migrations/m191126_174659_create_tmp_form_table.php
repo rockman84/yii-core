@@ -20,6 +20,7 @@ class m191126_174659_create_tmp_form_table extends Migration
             'key' => $this->string()->unique()->notNull(),
             'user_id' => $this->integer()->defaultValue(null),
             'model_form' => $this->binary()->notNull(),
+            'ref_id' => $this->integer()->defaultValue(null),
             'class_name' => $this->string()->defaultValue(null),
             'return_url' => $this->string()->defaultValue(null),
             'session' => $this->string()->defaultValue(null),
