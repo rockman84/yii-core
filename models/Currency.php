@@ -80,7 +80,7 @@ class Currency extends \sky\yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => 'Currency Name',
             'code' => 'Code',
             'symbol' => 'Symbol',
             'rate' => 'Rate',
@@ -104,10 +104,15 @@ class Currency extends \sky\yii\db\ActiveRecord
     
     public function getFormat($decimals = 0, $template = '{prefix} {symbol} {value} {suffix}')
     {
-        $value = number_format($this->value, $decimals, $this->decimal_point, $this->thousand_separator);
-        return Inflector::replace($template, $this->getParams($value));
+        return $this->format($this->value, $decimals, $template);
     }
     
+    public function format($value, $decimals = 0, $template = '{prefix} {symbol} {value} {suffix}')
+    {
+        $format = number_format($value, $decimals, $this->decimal_point, $this->thousand_separator);
+        return Inflector::replace($template, $this->getParams($format));
+    }
+
     protected function getParams($value)
     {
         return array_merge($this->toArray(), ['value' => $value, 'prefix' => $this->prefix, 'suffix' => $this->suffix]);

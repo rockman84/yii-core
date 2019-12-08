@@ -59,7 +59,7 @@ class Country extends \sky\yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => 'Country Name',
             'iso' => 'Iso',
             'iso3' => 'Iso3',
             'currency_id' => 'Currency ID',
