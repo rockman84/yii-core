@@ -1,4 +1,5 @@
 <?php
+namespace sky\yii\migrations;
 
 use yii\db\Migration;
 

@@ -1,6 +1,8 @@
 <?php
+namespace sky\yii\migrations;
 
 use sky\yii\db\Migration;
+use Yii;
 
 /**
  * Handles the creation of table `{{%user}}`.

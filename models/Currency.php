@@ -34,9 +34,9 @@ class Currency extends \sky\yii\db\ActiveRecord
     
     public $value;
     
-    public $prefix;
-    
-    public $suffix;
+//    public $prefix;
+//    
+//    public $suffix;
     
     static $_cache;
     
@@ -102,12 +102,12 @@ class Currency extends \sky\yii\db\ActiveRecord
         return static::$_cache[$code];
     }
     
-    public function getFormat($decimals = 0, $template = '{prefix} {symbol} {value} {suffix}')
+    public function getFormat($decimals = 0, $template = '{prefix} {value} {suffix}')
     {
         return $this->format($this->value, $decimals, $template);
     }
     
-    public function format($value, $decimals = 0, $template = '{prefix} {symbol} {value} {suffix}')
+    public function format($value, $decimals = 0, $template = '{prefix} {value} {suffix}')
     {
         $format = number_format($value, $decimals, $this->decimal_point, $this->thousand_separator);
         return Inflector::replace($template, $this->getParams($format));
@@ -165,9 +165,5 @@ class Currency extends \sky\yii\db\ActiveRecord
             return $code;
         }
         return $this;
-    }
-    
-    public function __toString() {
-        return $this->convertTo(Yii::$app->user->currency)->getFormat();
     }
 }

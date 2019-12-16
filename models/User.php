@@ -85,6 +85,16 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
             'updated_at' => 'Updated At',
         ];
     }
+    
+    public function fields() {
+        return [
+            'id',
+            'email',
+            'status',
+            'created_at',
+            'updated_at',
+        ];
+    }
 
     /**
      * @return \yii\db\ActiveQuery

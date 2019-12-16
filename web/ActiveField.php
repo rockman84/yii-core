@@ -2,33 +2,33 @@
 namespace sky\yii\web;
 
 use yii\helpers\ArrayHelper;
-use app\models\Currency;
+use sky\yii\models\Currency;
 use yii\bootstrap4\Html;
 use kartik\select2\Select2;
-use kartik\money\MaskMoney;
+use kartik\number\NumberControl;
 use kartik\date\DatePicker;
+use unclead\multipleinput\MultipleInput;
+
 
 class ActiveField extends \yii\bootstrap4\ActiveField
 {
     const DATE_PICKER_DEFAULT_FORMAT = 'dd M yyyy';
     
-    public function moneyInput($config = [])
+    public function numberInput($config = [])
     {
-        return $this->widget(MaskMoney::class, $config);
+        return $this->widget(NumberControl::class, $config);
     }
     
     public function currencyMoneyInput($currency = 'currency', $config = [])
     {
         $currency = $currency instanceof Currency ? $currency : $this->model->{$currency};
-        return $this->moneyInput(ArrayHelper::merge([
-            'pluginOptions' => [
-                'thousands' => $currency->thousand_separator,
-                'decimal' => $currency->decimal,
-                'prefix' => $currency->prefix ? : $currency->symbol . ' ',
-                'suffix' => $currency->suffix ? : '',
-                'allowEmpty' => false,
-                'allowNegative' => false,
-                'precision' => 0
+        return $this->numberInput(ArrayHelper::merge([
+            'maskedInputOptions' => [
+                'prefix' => $currency->prefix ? $currency->prefix . ' ' : '',
+                'suffix' => $currency->suffix ? ' ' . $currency->suffix : '',
+                'digits' => 2,
+                'groupSeparator' => $currency->thousand_separator,
+                'radixPoint' => $currency->decimal_point,
             ],
         ], $config));
     }
@@ -42,6 +42,21 @@ class ActiveField extends \yii\bootstrap4\ActiveField
                 'format' => static::DATE_PICKER_DEFAULT_FORMAT,
             ],
         ], $config));
+    }
+    
+    public function dateRange($config = [])
+    {
+        return $this->widget(DateRangePicker::class, ArrayHelper::merge([], $config));
+    }
+    
+    public function select2($config = [])
+    {
+        return $this->widget(Select2::class, ArrayHelper::merge([], $config));
+    }
+    
+    public function multipleInput($config)
+    {
+        return $this->widget(MultipleInput::class, $config);
     }
     
     public function label($label = null, $options = [])
