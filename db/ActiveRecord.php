@@ -1,6 +1,7 @@
 <?php
 namespace sky\yii\db;
 
+use yii\db\ActiveQuery;
 use yii\base\ModelEvent;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Inflector;
@@ -90,12 +91,15 @@ class ActiveRecord extends \yii\db\ActiveRecord
         return false;
     }
     
-    public static function getOptions($to = 'name', $from = 'id', $group = null, $queryCallback = null) {
-        $query = static::find();
-        if ($queryCallback) {
-            call_user_func($queryCallback, $query);
+    public static function getOptions($to = 'name', $from = 'id', $group = null, $query = null) {
+
+        $queryBase = static::find();
+        if (is_callable($query)) {
+            call_user_func($query, $queryBase);
+        } elseif ($query instanceof ActiveQuery) {
+            $queryBase = $query;
         }
-        return ArrayHelper::map($query->all(), $from, $to, $group);
+        return ArrayHelper::map($queryBase->all(), $from, $to, $group);
     }
     
     public function propertyAttributes()
