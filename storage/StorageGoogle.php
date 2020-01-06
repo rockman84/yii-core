@@ -65,11 +65,10 @@ class StorageGoogle extends \sky\yii\storage\StorageLocal
         $fileObject = fopen($file->tempName, 'r');
         $filePath = $this->getSavePath($file, $savePath, $fileBaseName);
         if ($object = $this->getBucket($bucket)->upload($fileObject, ['name' => $this->preFolder . '/' . $filePath ])) {
-            unlink($file->tempName);
             return new UploadedStorage([
                 'file' => $file,
                 'object' => $object,
-                'name' => $$fileBaseName,
+                'name' => $fileBaseName,
                 'path' => $filePath,
             ]);
         };

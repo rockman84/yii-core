@@ -16,9 +16,7 @@ class Signup extends \yii\base\Model
             ['password', 'string', 'min' => 6],
             ['email', 'trim'],
             [['email'], 'checkEmail'],
-            [['email'], 'filter', 'filter' => function ($value) {
-                return strtolower($value);
-            }],
+            [['email'], 'filter', 'filter' => 'strtolower'],
         ];
     }
     

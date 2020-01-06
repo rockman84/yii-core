@@ -112,16 +112,7 @@ class ActiveRecord extends \yii\db\ActiveRecord
         $property = $this->propertyAttributes();
         return isset($property[$name]);
     }
-    
-    public function delete()
-    {
-        if ($this->enableDelete) {
-            return parent::delete();
-        }
-        throw new \yii\base\NotSupportedException('cant delete');
-        
-    }
-    
+
     public function can($action, User $user = null, $exception = false)
     {
         $user = $user instanceof User ? $user : (!Yii::$app->user->isGuest ? Yii::$app->user->identity : null);

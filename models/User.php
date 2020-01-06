@@ -56,9 +56,7 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
     {
         return [
             [['email', 'password_hash'], 'required'],
-            [['email'], 'filter', 'filter' => function ($value) {
-                return strtolower($value);
-            }],
+            [['email'], 'filter', 'filter' => 'strtolower'],
             [['email'], 'email'],
             [['user_agent'], 'string', 'max' => 255],
             [['login_attempt', 'status', 'created_at', 'updated_at'], 'integer'],
@@ -94,14 +92,6 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
             'created_at',
             'updated_at',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getProfile()
-    {
-        return $this->hasOne(UserProfile::class, ['user_id' => 'id']);
     }
     
     public function getTmpForm()

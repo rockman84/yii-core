@@ -10,6 +10,7 @@ use yii\helpers\FileHelper;
 use yii\helpers\ArrayHelper;
 use yii\web\UploadedFile;
 use sky\yii\storage\StorageGoogle;
+use Google\Cloud\Storage\StorageObject;
 
 /**
  * This is the model class for table "file".
@@ -26,6 +27,11 @@ use sky\yii\storage\StorageGoogle;
  * @property int $created_at
  * @property int $updated_at
  * 
+ * @property string $nameFormatted
+ * @property StorageGoogle $storage
+ * @property url $publicUrl
+ * @property bool $isImage
+ * 
  */
 class File extends \sky\yii\db\ActiveRecord
 {
@@ -36,6 +42,8 @@ class File extends \sky\yii\db\ActiveRecord
     public $file;
     
     public $savePath = 'file';
+    
+    public $uploadOptions = [];
     /**
      * {@inheritdoc}
      */
@@ -59,7 +67,7 @@ class File extends \sky\yii\db\ActiveRecord
             [['file', 'savePath'], 'required'],
             [['key'], 'default', 'value' => function () { return Yii::$app->security->generateRandomString(); }],
             [['name'], 'default', 'value' => function () { return $this->file ? $this->file->baseName : null; }],
-            [['created_at', 'updated_at'], 'integer'],
+            [['created_at', 'updated_at', 'size'], 'integer'],
             [['file'], 'file'],
             [['name', 'content_type', 'extension', 'path', 'object_name', 'bucket'], 'string', 'max' => 255],
         ];
@@ -83,9 +91,19 @@ class File extends \sky\yii\db\ActiveRecord
         ];
     }
     
-    public function getLinkFile($type = null)
+    public function getNameFormatted()
     {
-        return Yii::$app->bucket->getUrl($this->getFullPath($type));
+        return $this->name . '.' . $this->extension;
+    }
+    
+    public function getIsImage()
+    {
+        return (strpos($this->content_type, 'image') !== false);
+    }
+    
+    public function getPublicUrl()
+    {
+        return Yii::$app->storage->getUrl($this->path);
     }
     
     public static function resizeType()
@@ -125,31 +143,26 @@ class File extends \sky\yii\db\ActiveRecord
         return $result;
     }
     
-    public function beforeSave($insert) {
-        /* @var $storage \sky\yii\storage\StorageGoogle */
-        $storage = Yii::$app->storage;
-        /* @var $fileObject \sky\yii\storage\UploadedStorage */
-        $fileObject = $storage->upload($this->file, $this->name, $this->savePath, $this->bucket);
+    public function beforeSave($insert)
+    {
+        $fileObject = $this->storage->upload($this->file, $this->name, $this->savePath, $this->bucket);
         if ($fileObject) {
-            $this->attribute = [
+            $this->attributes = [
                 'size' => $this->file->size,
                 'extension' => $this->file->extension,
                 'content_type' => $this->file->type,
                 'path' => $fileObject->path,
                 
             ];
-            if ($fileObject->object instanceof \sky\yii\storage\StorageGoogle) {
+            if ($fileObject->object instanceof StorageObject) {
                 $this->attributes = [
                     'bucket' => $fileObject->object->info()['bucket'],
                     'object_name' => $fileObject->object->name(),
                 ];
             }
+            unlink($this->file->tempName);
             return parent::beforeSave($insert);
         }
-    }
-    
-    public function afterDelete() {
-        return parent::afterDelete();
     }
     
     public function getObject($options = [])
@@ -160,5 +173,20 @@ class File extends \sky\yii\db\ActiveRecord
     public function getBucket()
     {
         return Yii::$app->storage->getBucket($this->bucket);
+    }
+    
+    /* @var $storage \sky\yii\storage\StorageGoogle */
+    public function getStorage()
+    {
+        return Yii::$app->get('storage');
+    }
+    
+    public static function upload(UploadedFile $file, $savePath, $resize)
+    {
+        $fileModel = new static([
+            'file' => $file,
+            'savePath' => $savePath,
+        ]);
+        return $fileModel->save() ? $fileModel : false;
     }
 }
