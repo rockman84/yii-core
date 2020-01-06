@@ -106,43 +106,6 @@ class File extends \sky\yii\db\ActiveRecord
         return Yii::$app->storage->getUrl($this->path);
     }
     
-    public static function resizeType()
-    {
-        return [
-            'sm' => [200, 200],
-            'md' => [768, 768],
-            'lg' => [1000, 1000],
-        ];
-    }
-    
-    /**
-     * 
-     * @param UploadedFile $file
-     * @return UploadedFile[]
-     */
-    public static function resize(UploadedFile $file)
-    {
-        $result = [];
-        $unique = Yii::$app->security->generateRandomString(8);
-        foreach (static::resizeType() as $type => $size) {
-            $path = Yii::getAlias("@app/runtime/img/{$unique}/");
-            if (!is_dir($path)) {
-                FileHelper::createDirectory($path);
-            }
-            $fileName = "{$file->baseName}-{$type}.{$file->extension}";
-            $resizePath = $path . $fileName; 
-            $image = Image::resize($file->tempName, $size[0], $size[1])->save($resizePath);
-            UploadedFile::getInstanceByName($resizePath);
-            $result[$type] = new UploadedFile([
-                'name' => $fileName,
-                'tempName' => $resizePath,
-                'type' => $file->type,
-            ]);
-            
-        }
-        return $result;
-    }
-    
     public function beforeSave($insert)
     {
         $fileObject = $this->storage->upload($this->file, $this->name, $this->savePath, $this->bucket);

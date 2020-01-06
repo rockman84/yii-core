@@ -40,7 +40,7 @@ class ActiveUploadBehavior extends \yii\base\Behavior
         ];
     }
     
-    public function upload()
+    public function upload($event)
     {
         $fileUploaded = $this->owner->{$this->fileAttribute};
         if (!$fileUploaded || !$fileUploaded instanceof UploadedFile) {
