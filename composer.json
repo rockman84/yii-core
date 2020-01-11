@@ -11,8 +11,8 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/rockman84/yii2-slack-client/issues",
-        "source": "https://github.com/rockman84/yii2-slack-client"
+        "issues": "https://github.com/rockman84/sky-yiisoft/issues",
+        "source": "https://github.com/rockman84/sky-yiisoft"
     },
     "require": {
         "php": ">=7.0.0",
@@ -22,7 +22,9 @@
         "yiisoft/yii2-queue": "^2.3",
         "yiisoft/yii2-imagine": "~2.2.0",
         "sky/yii2-slack-client": "dev-master",
-        "kartik-v/yii2-widgets": "*"
+        "kartik-v/yii2-widgets": "~3.4",
+        "kartik-v/yii2-date-range": "~1.7",
+        "kartik-v/yii2-number": "~1.0"
     },
     "autoload": {
       "psr-4": {
