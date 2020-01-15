@@ -12,4 +12,5 @@ class ActiveForm extends \yii\bootstrap4\ActiveForm
     public function field($model, $attribute, $options = array()) {
         return parent::field($model, $attribute, $options);
     }
+    
 }

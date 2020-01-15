@@ -68,11 +68,6 @@ class ActiveField extends \yii\bootstrap4\ActiveField
         ], $config));
     }
     
-    public function dateRange($config = [])
-    {
-        return $this->widget(DateRangePicker::class, ArrayHelper::merge([], $config));
-    }
-    
     public function select2($config = [])
     {
         return $this->widget(Select2::class, ArrayHelper::merge([
@@ -89,7 +84,10 @@ class ActiveField extends \yii\bootstrap4\ActiveField
     
     public function multipleInput($config)
     {
-        return $this->widget(MultipleInput::class, $config);
+        return $this->widget(MultipleInput::class, ArrayHelper::merge([
+            'iconSource' => MultipleInput::ICONS_SOURCE_FONTAWESOME,
+            'max' => 20,
+        ], $config));
     }
     
     public function label($label = null, $options = [])
