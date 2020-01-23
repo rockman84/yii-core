@@ -124,12 +124,12 @@ class Currency extends \sky\yii\db\ActiveRecord
         return $this;
     }
     
-    public static function convert(Currency $codeForm, Currency $code, $value)
+    public static function convert(Currency $codeFrom, Currency $code, $value)
     {
-        if ($codeForm->id == $code->id) {
+        if ($codeFrom->id == $code->id) {
             return $value;
         }
-        return ($code->rate / $codeForm->rate) * $value;
+        return ($code->rate / $codeFrom->rate) * $value;
     }
     
     public static function getDefaultCurrency()
