@@ -16,11 +16,6 @@ use yii\helpers\FormatConverter;
 
 class ActiveField extends \yii\bootstrap4\ActiveField
 {
-    const DATE_PICKER_DEFAULT_FORMAT = 'dd MMM yyyy';
-    const DATE_PICKER_DEFAULT_PHP_FORMAT = 'd M Y';
-    
-    const DATETIME_PICKER_DEFAULT_BOOTSTRAP_FORMAT = 'dd M yyyy HH:ii:ss';
-    const DATETIME_PICKER_DEFAULT_PHP_FORMAT = 'd M Y H:i:s';
     
     public function numberInput($config = [])
     {
@@ -38,6 +33,21 @@ class ActiveField extends \yii\bootstrap4\ActiveField
                 'groupSeparator' => $currency->thousand_separator,
                 'radixPoint' => $currency->decimal_point,
             ],
+        ], $config));
+    }
+    
+    public function aceEditor($config = [])
+    {
+        return $this->widget(AceEditor::class, ArrayHelper::merge([
+            'theme' => 'github',
+        ], $config));
+    }
+    
+    public function captcha($config = [])
+    {
+        return $this->widget(Captcha::class, array_merge([
+            'captchaAction' => '/skynode/app/captcha',
+            'template' => '<div class="row"><div class="col-4">{image}</div><div class="col-8">{input}</div></div>',
         ], $config));
     }
     

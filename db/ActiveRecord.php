@@ -23,26 +23,6 @@ class ActiveRecord extends \yii\db\ActiveRecord
     protected $enableDelete = false;
     protected $accessError = [];
     protected $access = [];
-
-    public function __get($name) {
-        $dataProperty = $this->propertyAttributes();
-        if (isset($dataProperty[$name])) {
-            return ArrayHelper::getValue($this, $dataProperty[$name]);
-        }
-        return parent::__get($name);
-    }
-    
-    public function __set($name, $value) {
-        $dataProperty = $this->propertyAttributes();
-        if (isset($dataProperty[$name])) {
-            $path = explode('.', $dataProperty[$name]);
-            $name = array_shift($path);
-            $data = [];
-            ArrayHelper::setValue($data, implode('.', $path), $value);
-            $value = array_merge($this->{$name} ? : [], $data);
-        }
-        return parent::__set($name, $value);
-    }
     
     public function getCreator($attribute = 'created_by')
     {
@@ -102,17 +82,6 @@ class ActiveRecord extends \yii\db\ActiveRecord
         return ArrayHelper::map($queryBase->all(), $from, $to, $group);
     }
     
-    public function propertyAttributes()
-    {
-        return [];
-    }
-    
-    public function hasPropertyAttribute($name)
-    {
-        $property = $this->propertyAttributes();
-        return isset($property[$name]);
-    }
-
     public function can($action, User $user = null, $exception = false)
     {
         $user = $user instanceof User ? $user : (!Yii::$app->user->isGuest ? Yii::$app->user->identity : null);
