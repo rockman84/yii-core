@@ -12,7 +12,8 @@ use kartik\datetime\DateTimePicker;
 use unclead\multipleinput\MultipleInput;
 use kartik\typeahead\Typeahead;
 use yii\helpers\FormatConverter;
-
+use vova07\imperavi\Widget;
+use trntv\aceeditor\AceEditor;
 
 class ActiveField extends \yii\bootstrap4\ActiveField
 {
@@ -41,6 +42,11 @@ class ActiveField extends \yii\bootstrap4\ActiveField
         return $this->widget(AceEditor::class, ArrayHelper::merge([
             'theme' => 'github',
         ], $config));
+    }
+    
+    public function redactor($config)
+    {
+        return $this->widget(Widget::class, $config = []);
     }
     
     public function captcha($config = [])

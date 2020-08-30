@@ -25,7 +25,8 @@
         "kartik-v/yii2-widgets": "~3.4",
         "kartik-v/yii2-date-range": "~1.7",
         "kartik-v/yii2-number": "~1.0",
-        "trntv/yii2-aceeditor" : "~2.1"
+        "trntv/yii2-aceeditor" : "~2.1",
+        "vova07/yii2-imperavi-widget": "*"
     },
     "autoload": {
       "psr-4": {
