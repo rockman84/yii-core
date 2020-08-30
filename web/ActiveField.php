@@ -44,9 +44,24 @@ class ActiveField extends \yii\bootstrap4\ActiveField
         ], $config));
     }
     
-    public function redactor($config)
+    /**
+     * @see https://github.com/vova07/yii2-imperavi-widget
+     * @param type $config
+     * @return type
+     */
+    public function redactor($config = [])
     {
-        return $this->widget(Widget::class, $config = []);
+        return $this->widget(Widget::class, ArrayHelper::merge([
+            'settings' => [
+                'minHeight' => 600,
+                'plugins' => [
+                    'clips',
+                    'fullscreen',
+                    'imagemanager',
+                ],
+            ],
+            
+        ], $config));
     }
     
     public function captcha($config = [])
