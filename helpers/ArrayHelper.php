@@ -1,6 +1,7 @@
 <?php
 namespace sky\yii\helpers;
 
+use yii\db\ActiveRecord;
 use yii\helpers\Json;
 use Yii;
 
@@ -49,6 +50,8 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
                 if (is_int($attribute)) {
                     $attribute = $part[0];
                 }
+            } elseif ($array instanceof ActiveRecord) {
+                $value = $array->toArray();
             } else {
                 $value = static::getValue($array, $key);
             }
