@@ -33,11 +33,11 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
      * ```
      *
      * @param $array
-     * @param $mappingAttribute
+     * @param array $mappingAttribute
      * @return array
      * @throws \Exception
      */
-    public static function getArrayMapValue($array, $mappingAttribute)
+    public static function getArrayMapValue($array, array $mappingAttribute)
     {
         $data = [];
         foreach ($mappingAttribute as $attribute => $key) {
