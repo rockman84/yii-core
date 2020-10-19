@@ -14,6 +14,7 @@ use kartik\typeahead\Typeahead;
 use yii\helpers\FormatConverter;
 use vova07\imperavi\Widget;
 use trntv\aceeditor\AceEditor;
+use yii\captcha\Captcha;
 
 class ActiveField extends \yii\bootstrap4\ActiveField
 {
