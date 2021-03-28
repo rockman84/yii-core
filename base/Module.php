@@ -16,7 +16,7 @@ class Module extends \yii\base\Module
             if ($this->parentIds === null) {
                 static::getParentModuleIds($this, $this->parentIds);
             }
-            $this->baseUrl = implode(array_reverse($this->parentIds), '/');
+            $this->baseUrl = implode( '/', array_reverse($this->parentIds),);
         }
         
         return parent::init();
