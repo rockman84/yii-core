@@ -10,6 +10,7 @@ use Yii;
 
 /**
  * @property array $accessErrors
+ * @property array $constantOptions
  */
 class ActiveRecord extends \yii\db\ActiveRecord
 {    
@@ -23,7 +24,19 @@ class ActiveRecord extends \yii\db\ActiveRecord
     protected $enableDelete = false;
     protected $accessError = [];
     protected $access = [];
-    
+
+    private static $_constantOptions = [];
+
+    public static function getConstantOptions()
+    {
+        $className = static::class;
+        if (!array_key_exists($className, static::$_constantOptions)) {
+            $self = new \ReflectionClass(new static());
+            static::$_constantOptions[$className] = $self->getConstants();
+        }
+        return static::$_constantOptions[$className];
+    }
+
     public function getCreator($attribute = 'created_by')
     {
         if ($this->hasAttribute($attribute)) {
@@ -31,7 +44,13 @@ class ActiveRecord extends \yii\db\ActiveRecord
         }
         return false;
     }
-    
+
+    public function addError($attribute, $error = '')
+    {
+        Yii::error($attribute . ': ' . $error, 'validation');
+        return parent::addError($attribute, $error);
+    }
+
     public function getUpdater($attribute = 'updated_by')
     {
         if ($this->hasAttribute($attribute)) {
@@ -39,11 +58,14 @@ class ActiveRecord extends \yii\db\ActiveRecord
         }
         return false;
     }
-    
-    public static function getConstants($name) 
+
+    /**
+     * @param $name
+     * @return array|false
+     */
+    public static function getConstants($name)
     {
-        $self = new \ReflectionClass(new static());
-        $contants = $self->getConstants();
+        $contants = static::getConstantOptions();
         $prefix = strtoupper($name) . '_';
         $prefixLength = strlen($prefix);
         $prefixOffset = $prefixLength - 1;
@@ -81,7 +103,10 @@ class ActiveRecord extends \yii\db\ActiveRecord
         }
         return ArrayHelper::map($queryBase->all(), $from, $to, $group);
     }
-    
+
+    /**
+     * @deprecated april 2021
+     */
     public function can($action, User $user = null, $exception = false)
     {
         $user = $user instanceof User ? $user : (!Yii::$app->user->isGuest ? Yii::$app->user->identity : null);
@@ -114,12 +139,23 @@ class ActiveRecord extends \yii\db\ActiveRecord
     {
         return ArrayHelper::getValue($this, $key);
     }
-    
+
+    /**
+     * @deprecated april 2021
+     * @param $action
+     * @param $message
+     */
     public function addAccessError($action, $message)
     {
         $this->accessError[$action] = $message;
     }
-    
+
+    /**
+     * @deprecated april 2021
+     * @param null $type
+     * @return array|mixed
+     * @throws \Exception
+     */
     public function getAccessErrors($type = null)
     {
         if ($type == null) {
@@ -135,10 +171,7 @@ class ActiveRecord extends \yii\db\ActiveRecord
         return parent::load($data, $formName);
     }
     
-    public function afterValidate() {
-        return parent::afterValidate();
-    }
-    
+
     public static function findLast()
     {
         return static::find()->orderBy(['id' => SORT_DESC])->one();
