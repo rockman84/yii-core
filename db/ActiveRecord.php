@@ -3,7 +3,7 @@ namespace sky\yii\db;
 
 use yii\db\ActiveQuery;
 use yii\base\ModelEvent;
-use yii\helpers\ArrayHelper;
+use sky\yii\helpers\ArrayHelper;
 use yii\helpers\Inflector;
 use app\models\User;
 use Yii;
@@ -32,9 +32,69 @@ class ActiveRecord extends \yii\db\ActiveRecord
         $className = static::class;
         if (!array_key_exists($className, static::$_constantOptions)) {
             $self = new \ReflectionClass(new static());
-            static::$_constantOptions[$className] = $self->getConstants();
+            $labels = static::constantLabels();
+
+            $constants = [];
+            foreach ($self->getConstants() as $key => $value) {
+                $constants[$key] = [
+                    'label' => ArrayHelper::getValue($labels, $key, null),
+                    'value' => $value,
+                ];
+            }
+            static::$_constantOptions[$className] = $constants;
         }
         return static::$_constantOptions[$className];
+    }
+
+    /**
+     * @param $name
+     * @return array|false
+     */
+    public static function getConstants($name)
+    {
+        $contants = static::getConstantOptions();
+        $prefix = strtoupper($name) . '_';
+        $prefixLength = strlen($prefix);
+        $prefixOffset = $prefixLength - 1;
+        $options = [];
+        foreach ($contants as $key => $const) {
+            if (substr($key, 0, $prefixLength) === $prefix) {
+                if ($const['label'] === null) {
+                    $const['label'] = Yii::t('app', ucwords(strtolower(Inflector::humanize(substr($key, $prefixLength)))));
+                    static::$_constantOptions[static::class][$key]['label'] = $const['label'];
+                }
+                $options[$const['value']] = $const['label'] ;
+            }
+        }
+
+        if (!$options) {
+            return false;
+        } else {
+            return $options;
+        }
+    }
+
+    /**
+     * @param $name
+     * @param $value
+     * @return false|mixed
+     */
+    public static function getConstant($name, $value)
+    {
+        if ($options = static::getConstants($name)) {
+            if (isset($options[$value])) {
+                return $options[$value];
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return array
+     */
+    public static function constantLabels()
+    {
+        return [];
     }
 
     public function getCreator($attribute = 'created_by')
@@ -55,40 +115,6 @@ class ActiveRecord extends \yii\db\ActiveRecord
     {
         if ($this->hasAttribute($attribute)) {
             return $this->hasOne(User::className(), ['id' => $attribute]);
-        }
-        return false;
-    }
-
-    /**
-     * @param $name
-     * @return array|false
-     */
-    public static function getConstants($name)
-    {
-        $contants = static::getConstantOptions();
-        $prefix = strtoupper($name) . '_';
-        $prefixLength = strlen($prefix);
-        $prefixOffset = $prefixLength - 1;
-        $options = [];
-        foreach ($contants as $key => $value) {
-            if (substr($key, 0, $prefixLength) === $prefix) {
-                $options[$value] = ucwords(strtolower(Inflector::humanize(substr($key, $prefixLength))));
-            }
-        }
-        
-        if (!$options) {
-            return false;
-        } else {
-            return $options;
-        }
-    }
-    
-    public static function getConstant($name, $value)
-    {
-        if ($options = static::getConstants($name)) {
-            if (isset($options[$value])) {
-                return $options[$value];
-            }
         }
         return false;
     }
