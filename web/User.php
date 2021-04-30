@@ -1,6 +1,7 @@
 <?php
 namespace sky\yii\web;
 
+use sky\yii\helpers\ArrayHelper;
 use Yii;
 use yii\web\Cookie;
 
@@ -18,6 +19,24 @@ class User extends \yii\web\User
      */
     public $guestIdParam = '__skyGuestId__';
 
+    /**
+     * enable guest ID if false, $guestId will always return nul
+     * @var bool
+     */
+    public $enableGuestId = false;
+
+    /**
+     * days of cookie guest ID default is 90 days
+     * @var int
+     */
+    public $guestIdExpire = 86400 * 90;
+
+    /**
+     * default cookie params
+     * @var array
+     */
+    public $defaultCookieParams = [];
+
     protected $_guestId = null;
 
     /**
@@ -27,16 +46,39 @@ class User extends \yii\web\User
      */
     public function getGuestId()
     {
+        if (!$this->enableGuestId) {
+            $this->destroyGuestId();
+            return null;
+        }
         $this->_guestId  = Yii::$app->request->getCookies()->getValue($this->guestIdParam);
         if (!$this->_guestId) {
-            $cookie = new Cookie([
+            $cookie = $this->createCookie([
                 'name' => $this->guestIdParam,
-                'value' => Yii::$app->security->generateRandomString(64),
-                'expire' => time() + (86400 * 365),
+                'value' => Yii::$app->security->generateRandomString(32) . '-' . time(),
+                'expire' => time() + $this->guestIdExpire,
             ]);
             $this->_guestId = $cookie->value;
             Yii::$app->response->cookies->add($cookie);
         }
         return $this->_guestId;
+    }
+
+    /**
+     * destroy guest ID cookie
+     */
+    public function destroyGuestId()
+    {
+        $this->_guestId = null;
+        Yii::$app->response->cookies->remove($this->guestIdParam);
+    }
+
+    /**
+     * create cookies
+     * @param array $params
+     * @return Cookie
+     */
+    public function createCookie($params = [])
+    {
+        return new Cookie(ArrayHelper::merge($this->defaultCookieParams, $params));
     }
 }
