@@ -66,12 +66,7 @@ class ActiveRecord extends \yii\db\ActiveRecord
                 $options[$const['value']] = $const['label'] ;
             }
         }
-
-        if (!$options) {
-            return false;
-        } else {
-            return $options;
-        }
+        return $options;
     }
 
     /**
