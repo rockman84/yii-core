@@ -81,4 +81,10 @@ class User extends \yii\web\User
     {
         return new Cookie(ArrayHelper::merge($this->defaultCookieParams, $params));
     }
+
+    public function afterLogout($identity)
+    {
+        $this->destroyGuestId();
+        return parent::afterLogout($identity);
+    }
 }

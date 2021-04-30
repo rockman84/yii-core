@@ -5,9 +5,12 @@ use sky\yii\models\User;
 
 class Signup extends \yii\base\Model
 {
+
     public $email;
     
     public $password;
+
+    public $confirmPassword;
     
     public function rules() {
         return [

@@ -9,6 +9,8 @@ use yii\helpers\Json;
 class ActiveForm extends \yii\bootstrap4\ActiveForm
 {
     public $fieldClass = 'sky\yii\web\ActiveField';
+
+    public $model;
     
     /**
      * {@inheritdoc}
@@ -16,6 +18,14 @@ class ActiveForm extends \yii\bootstrap4\ActiveForm
      */
     public function field($model, $attribute, $options = array()) {
         return parent::field($model, $attribute, $options);
+    }
+
+    public function input($attribute, $options = [])
+    {
+        if (!$this->model) {
+            throw new InvalidCallException("model property must be set.");
+        }
+        return $this->field($this->model, $attribute, $options);
     }
     
     /**

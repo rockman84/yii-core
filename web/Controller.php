@@ -12,13 +12,13 @@ use yii\base\Model;
 class Controller extends \yii\web\Controller
 {       
     
-    protected function jsonValidateModel(Model $model, $attributes = null)
+    public function jsonValidateModel(Model $model, $attributes = null)
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         return ActiveForm::validate($model, $attributes);
     }
     
-    protected function isAjaxValidation(Model $model, $formName = null)
+    public function isAjaxValidation(Model $model, $formName = null)
     {
         return Yii::$app->request->isAjax && $model->load(Yii::$app->request->post(), $formName);
     }
@@ -32,7 +32,7 @@ class Controller extends \yii\web\Controller
         }
     }
     
-    protected function renderSubLayout(Model $model, $layout, $view, $params = [])
+    public function renderSubLayout(Model $model, $layout, $view, $params = [])
     {
         $params = array_merge(['model' => $model], $params);
         return $this->render($layout, [

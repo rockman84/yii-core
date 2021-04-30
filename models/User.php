@@ -206,5 +206,5 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
         return $this->status == static::STATUS_ACTIVE;
     }
     
-    
+
 }
