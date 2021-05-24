@@ -44,7 +44,7 @@ class SignupAction extends Action
         }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             if ($this->successCallback) {
-                return $this->controller->{$this->successCallback}($model);
+                return $this->controller->{$this->successCallback}($model, $this->controller);
             }
             return $this->controller->goBack();
         } elseif ($this->failCallback) {

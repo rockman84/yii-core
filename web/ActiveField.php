@@ -2,19 +2,20 @@
 namespace sky\yii\web;
 
 use Yii;
-use yii\helpers\ArrayHelper;
-use sky\yii\models\Currency;
 use yii\bootstrap4\Html;
+use yii\helpers\ArrayHelper;
+use yii\helpers\FormatConverter;
+use sky\yii\models\Currency;
 use kartik\select2\Select2;
 use kartik\number\NumberControl;
 use kartik\date\DatePicker;
 use kartik\datetime\DateTimePicker;
-use unclead\multipleinput\MultipleInput;
 use kartik\typeahead\Typeahead;
-use yii\helpers\FormatConverter;
+use kartik\rating\StarRating;
 use vova07\imperavi\Widget;
 use trntv\aceeditor\AceEditor;
 use yii\captcha\Captcha;
+use unclead\multipleinput\MultipleInput;
 
 class ActiveField extends \yii\bootstrap4\ActiveField
 {
@@ -86,7 +87,7 @@ class ActiveField extends \yii\bootstrap4\ActiveField
             ],
         ], $config));
     }
-    
+
     public function dateTimePicker($config = [])
     {
         return $this->widget(DateTimePicker::class, array_merge([
@@ -104,6 +105,16 @@ class ActiveField extends \yii\bootstrap4\ActiveField
     {
         return $this->widget(Select2::class, ArrayHelper::merge([
             'options' => ['placeholder' => 'Select...']
+        ], $config));
+    }
+
+    public function starRating($config = [])
+    {
+        return $this->widget(StarRating::class, ArrayHelper::merge([
+            'pluginOptions' => [
+                'step' => 1,
+                'stars' => 5,
+            ]
         ], $config));
     }
     

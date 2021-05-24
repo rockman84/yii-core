@@ -2,6 +2,7 @@
 namespace sky\yii\models\form;
 
 use sky\yii\models\User;
+use Yii;
 
 class Signup extends \yii\base\Model
 {
@@ -16,7 +17,8 @@ class Signup extends \yii\base\Model
         return [
             [['email', 'password'], 'required'],
             ['email', 'email'],
-            ['password', 'string', 'min' => 6],
+            [['confirmPassword', 'password'], 'string', 'min' => 6],
+            ['confirmPassword', 'compare', 'compareAttribute' => 'password'],
             ['email', 'trim'],
             [['email'], 'checkEmail'],
             [['email'], 'filter', 'filter' => 'strtolower'],
@@ -33,11 +35,15 @@ class Signup extends \yii\base\Model
     
     public function save()
     {
+        $userClass = Yii::$app->user->identityClass;
         if ($this->validate()) {
-            $user = new User;
+            $user = Yii::createObject($userClass);
             $user->load($this->getAttributes(), '');
             $user->setPassword($this->password);
-            return $user->save() ? $user : false;
+            if ($user->save()) {
+                Yii::$app->user->login($user);
+                return $user;
+            }
         }
         return false;
     }
