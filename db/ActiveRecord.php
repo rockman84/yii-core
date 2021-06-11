@@ -25,7 +25,7 @@ class ActiveRecord extends \yii\db\ActiveRecord
     protected $accessError = [];
     protected $access = [];
 
-    private static $_constantOptions = [];
+    static $_constantOptions = [];
 
     public static function getConstantOptions()
     {
