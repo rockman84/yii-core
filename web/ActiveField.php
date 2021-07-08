@@ -120,9 +120,7 @@ class ActiveField extends \yii\bootstrap4\ActiveField
     
     public function typeahead($options)
     {
-        return $this->widget(Typeahead::class, ArrayHelper::merge([
-
-        ], $options));
+        return $this->widget(Typeahead::class, ArrayHelper::merge([], $options));
     }
     
     public function multipleInput($config)
