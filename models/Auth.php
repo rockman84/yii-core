@@ -47,7 +47,8 @@ class Auth extends ActiveRecord
     {
         return [
             [['user_id', 'source', 'source_id'], 'required'],
-            [['source'], 'unique', 'targetAttribute' => ['source', 'source_id']],
+            [['source_id'], 'unique', 'targetAttribute' => ['source', 'source_id']],
+            [['source'], 'unique', 'targetAttribute' => ['user_id', 'source']],
             [['user_id', 'created_at', 'updated_at'], 'integer'],
             [['data'], 'safe'],
             [['source', 'source_id'], 'string', 'max' => 255],
@@ -77,5 +78,15 @@ class Auth extends ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+    /**
+     * @param $source
+     * @param $sourceId
+     * @return Auth|null
+     */
+    public static function findBySource($source, $sourceId)
+    {
+        return static::findOne(['source' => $source, 'source_id' => $sourceId]);
     }
 }
