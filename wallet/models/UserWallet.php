@@ -146,7 +146,7 @@ class UserWallet extends \sky\node\components\db\ActiveRecord
         return parent::beforeSave($insert);
     }
 
-    public static function formatValue(UserWallet $wallet, $value, $decimal = 0)
+    public static function formatValue(UserWallet $wallet, $value, $decimals = 0)
     {
         return $wallet->currency->format($value, $decimals);
     }

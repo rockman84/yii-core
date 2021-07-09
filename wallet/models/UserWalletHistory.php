@@ -3,9 +3,11 @@
 namespace sky\yii\wallet\models;
 
 use Yii;
+use sky\yii\db\ActiveRecord;
+use sky\yii\wallet\models\UserWallet;
 use sky\yii\helpers\ArrayHelper;
 use yii\behaviors\TimestampBehavior;
-use sky\yii\db\ActiveRecord;
+
 
 /**
  * This is the model class for table "user_wallet_history".
@@ -79,7 +81,7 @@ class UserWalletHistory extends \sky\node\components\db\ActiveRecord
         }
         /* @var $previous UserWalletHistory */
         $previous = $wallet->getUserWalletHistories()->orderBy(['created_at' => SORT_DESC])->one();
-        if ($previous->new_wallet != $this->userWallet->value) {
+        if ($previous && $previous->new_wallet != $this->userWallet->value) {
             $this->addError('value', Yii::t('app', 'Wallet value not match transaction. Please contact admin!'));
         }
         if ($this->operators == static::OPERATORS_SUBTRACT && $this->value > $wallet->value) {
@@ -121,7 +123,7 @@ class UserWalletHistory extends \sky\node\components\db\ActiveRecord
 
     public function getValueFormatted()
     {
-        return ($this->operators == static::OPERATORS_SUBTRACT ? '- ' : null) . UserWallet::formatValue($this->value, $this->userWallet);
+        return ($this->operators == static::OPERATORS_SUBTRACT ? '- ' : null) . UserWallet::formatValue($this->userWallet, $this->value);
     }
 
     public function getOldWalletFormatted()
