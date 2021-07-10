@@ -12,10 +12,14 @@ class Signup extends \yii\base\Model
     public $password;
 
     public $confirmPassword;
-    
+
+    public $verifyCode;
+
+    protected $_user;
+
     public function rules() {
         return [
-            [['email', 'password'], 'required'],
+            [['email', 'password', 'verifyCode'], 'required'],
             ['email', 'email'],
             [['confirmPassword', 'password'], 'string', 'min' => 6],
             ['confirmPassword', 'compare', 'compareAttribute' => 'password'],
@@ -35,9 +39,9 @@ class Signup extends \yii\base\Model
     
     public function save()
     {
-        $userClass = Yii::$app->user->identityClass;
+
         if ($this->validate()) {
-            $user = Yii::createObject($userClass);
+            $user = $this->getUser();
             $user->load($this->getAttributes(), '');
             $user->setPassword($this->password);
             if ($user->save()) {
@@ -46,5 +50,13 @@ class Signup extends \yii\base\Model
             }
         }
         return false;
+    }
+
+    public function getUser()
+    {
+        if (!$this->_user) {
+            $this->_user = Yii::createObject(Yii::$app->user->identityClass);
+        }
+        return $this->_user;
     }
 }

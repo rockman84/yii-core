@@ -28,6 +28,8 @@ use sky\yii\wallet\models\UserWalletHistory;
  * @property string $valueFormatted
  * @property User $user
  * @property UserWalletHistory[] $userWalletHistories
+ * @property-read UserWalletHistory $lastTransactionHistory
+ * @property-read bool $isLastTransactionValid
  */
 class UserWallet extends \sky\node\components\db\ActiveRecord
 {
@@ -108,6 +110,23 @@ class UserWallet extends \sky\node\components\db\ActiveRecord
     public function getUserWalletHistories()
     {
         return $this->hasMany(UserWalletHistory::class, ['user_wallet_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLastTransactionHistory()
+    {
+        return $this->hasOne(UserWalletHistory::class, ['user_wallet_id' => 'id'])
+            ->orderBy(['created_at' => SORT_DESC, 'id' => SORT_DESC]);
+    }
+
+    public function getIsLastTransactionValid()
+    {
+        if ($this->lastTransactionHistory) {
+            return $this->lastTransactionHistory->new_wallet == $this->value;
+        }
+        return $this->value == 0;
     }
 
     public function checkBalance($value)

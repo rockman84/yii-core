@@ -79,9 +79,7 @@ class UserWalletHistory extends \sky\node\components\db\ActiveRecord
         if (!$wallet) {
             return $this->addError('user_wallet_id', Yii::t('app', 'Wallet not found'));
         }
-        /* @var $previous UserWalletHistory */
-        $previous = $wallet->getUserWalletHistories()->orderBy(['created_at' => SORT_DESC])->one();
-        if ($previous && $previous->new_wallet != $this->userWallet->value) {
+        if (!$wallet->isLastTransactionValid) {
             $this->addError('value', Yii::t('app', 'Wallet value not match transaction. Please contact admin!'));
         }
         if ($this->operators == static::OPERATORS_SUBTRACT && $this->value > $wallet->value) {

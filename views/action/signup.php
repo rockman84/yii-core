@@ -3,10 +3,11 @@
 /* @var $this yii\web\View */
 /* @var $form sky\yii\web\ActiveForm */
 
-/* @var $model app\models\LoginForm */
+/* @var $model \sky\yii\models\form\Signup */
 
 use yii\helpers\Html;
 use sky\yii\web\ActiveForm;
+use yii\captcha\Captcha;
 
 $this->title = Yii::t('app', 'Signup');
 ?>
@@ -32,6 +33,10 @@ $this->title = Yii::t('app', 'Signup');
                     <?= $form->input('password')->passwordInput() ?>
 
                     <?= $form->input('confirmPassword')->passwordInput() ?>
+
+                    <?= $form->field($model, 'verifyCode')->widget(Captcha::className(), [
+                        'template' => '<div class="row"><div class="col-lg-3">{image}</div><div class="col-lg-6">{input}</div></div>',
+                    ]) ?>
 
                 </div>
                 <div class="card-footer">
