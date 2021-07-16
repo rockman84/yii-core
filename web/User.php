@@ -23,7 +23,7 @@ class User extends \yii\web\User
      * enable guest ID if false, $guestId will always return nul
      * @var bool
      */
-    public $enableGuestId = false;
+    public $enableGuestId = true;
 
     /**
      * days of cookie guest ID default is 90 days
@@ -50,15 +50,17 @@ class User extends \yii\web\User
             $this->destroyGuestId();
             return null;
         }
-        $this->_guestId  = Yii::$app->request->getCookies()->getValue($this->guestIdParam);
         if (!$this->_guestId) {
-            $cookie = $this->createCookie([
-                'name' => $this->guestIdParam,
-                'value' => Yii::$app->security->generateRandomString(32) . '-' . time(),
-                'expire' => time() + $this->guestIdExpire,
-            ]);
-            $this->_guestId = $cookie->value;
-            Yii::$app->response->cookies->add($cookie);
+            $this->_guestId  = Yii::$app->request->getCookies()->getValue($this->guestIdParam);
+            if (!$this->_guestId) {
+                $cookie = $this->createCookie([
+                    'name' => $this->guestIdParam,
+                    'value' => Yii::$app->security->generateRandomString(32) . '-' . time(),
+                    'expire' => time() + $this->guestIdExpire,
+                ]);
+                $this->_guestId = $cookie->value;
+                Yii::$app->response->cookies->add($cookie);
+            }
         }
         return $this->_guestId;
     }
