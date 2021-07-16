@@ -172,9 +172,9 @@ class UserWallet extends \sky\node\components\db\ActiveRecord
 
     public static function getOrCreate(\sky\yii\models\User $user, Currency $currency)
     {
-        $wallet = UserWallet::findOne(['currency_id' => $currency->id, 'user_id' => $user->id]);
+        $wallet = static::findOne(['currency_id' => $currency->id, 'user_id' => $user->id]);
         if (!$wallet) {
-            $wallet = new UserWallet([
+            $wallet = new static([
                 'user_id' => $user->id,
                 'currency_id' => $currency->id,
                 'value' => 0,
