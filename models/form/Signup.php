@@ -52,6 +52,10 @@ class Signup extends \yii\base\Model
         return false;
     }
 
+    /**
+     * @return User
+     * @throws \yii\base\InvalidConfigException
+     */
     public function getUser()
     {
         if (!$this->_user) {
