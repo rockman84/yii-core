@@ -69,9 +69,11 @@ class ActiveField extends \yii\bootstrap4\ActiveField
     public function captcha($config = [])
     {
         return $this->widget(Captcha::class, array_merge([
-            'captchaAction' => '/skynode/app/captcha',
-            'template' => '<div class="row"><div class="col-4">{image}</div><div class="col-8">{input}</div></div>',
-        ], $config));
+            'options' => [
+                'class' => 'form-control mt-2',
+                'placeholder' => Yii::t('app', 'Type the text'),
+            ],
+        ], $config))->hint(Yii::t('app', 'Click Image to reload image'));
     }
     
     public function datePicker($config = [])
