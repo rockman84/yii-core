@@ -13,6 +13,8 @@ use kartik\datetime\DateTimePicker;
 use kartik\typeahead\Typeahead;
 use kartik\rating\StarRating;
 use vova07\imperavi\Widget;
+use kartik\switchinput\SwitchInput;
+
 use trntv\aceeditor\AceEditor;
 use yii\captcha\Captcha;
 use unclead\multipleinput\MultipleInput;
@@ -117,6 +119,13 @@ class ActiveField extends \yii\bootstrap4\ActiveField
                 'step' => 1,
                 'stars' => 5,
             ]
+        ], $config));
+    }
+
+    public function switchInput($config = [])
+    {
+        return $this->widget(SwitchInput::class, ArrayHelper::merge([
+
         ], $config));
     }
     
