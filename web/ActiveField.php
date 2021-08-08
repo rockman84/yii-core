@@ -21,7 +21,16 @@ use unclead\multipleinput\MultipleInput;
 
 class ActiveField extends \yii\bootstrap4\ActiveField
 {
-    
+    public function readOnly($readOnly = true, $value = null, $options = [])
+    {
+        if ($readOnly) {
+            $value = ArrayHelper::getValue($this->model, $value === null ? $this->attribute : $value);
+            Html::addCssClass($options, 'form-control bg-light');
+            $this->parts['{input}'] = Html::tag('div', Html::encode($value), $options);
+        }
+        return $this;
+    }
+
     public function numberInput($config = [])
     {
         return $this->widget(NumberControl::class, $config);
