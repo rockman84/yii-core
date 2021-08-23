@@ -157,6 +157,7 @@ class UserWalletHistory extends \sky\node\components\db\ActiveRecord
     {
         if ($insert) {
             $this->userWallet->save();
+            unset($this->userWallet->lastTransactionHistory);
         }
         return parent::afterSave($insert, $changedAttributes);
     }

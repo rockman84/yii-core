@@ -183,4 +183,34 @@ class UserWallet extends \sky\node\components\db\ActiveRecord
         }
         return $wallet;
     }
+
+    /**
+     * @param UserWallet $from
+     * @param UserWallet $to
+     * @param $value
+     * @param string|null $note
+     * @return bool|void
+     */
+    public static function transfer(UserWallet $from, UserWallet $to, $value, $note = null)
+    {
+        if ($value < 1 || $from->currency_id != $to->currency_id) {
+            return false;
+        }
+        $fromModel = $from->createTransaction(
+            UserWalletHistory::OPERATORS_SUBTRACT,
+            $value,
+            $note,
+            $to
+        );
+        $toModel = $to->createTransaction(
+            UserWalletHistory::OPERATORS_ADD,
+            $value,
+            $note,
+            $from
+        );
+        if ($fromModel->validate() && $toModel->validate()) {
+            return $fromModel->save() && $toModel->save();
+        }
+        return [$fromModel->errors, $toModel->errors];
+    }
 }
