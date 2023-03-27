@@ -10,7 +10,6 @@ use yii\behaviors\TimestampBehavior;
  * This is the model class for table "user".
  *
  * @property int $id
- * @property string $auth_key
  * @property string $email
  * @property string $email_verification_token
  * @property string $auth_key
@@ -25,6 +24,8 @@ use yii\behaviors\TimestampBehavior;
  *
  * @property boolean $isOwner
  * @property boolean $isActive
+ * @property-write mixed $password
+ * @property-read string $authKey
  * @property TmpForm[] $tmpForm
  */
 class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterface
@@ -55,6 +56,7 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
     public function rules()
     {
         return [
+            [['auth_key'], 'default', 'value' => null],
             [['email', 'password_hash'], 'required'],
             [['email'], 'filter', 'filter' => 'strtolower'],
             [['email'], 'email'],
@@ -113,7 +115,6 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        return $token;
         if ($token) {
             $user = static::findOne(['auth_key' => $token]);
             if ($user && !$user->isAccessTokenExpired) {
@@ -122,7 +123,10 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
         }
         return null;
     }
-    
+
+    /**
+     * @throws \yii\base\Exception
+     */
     public function generateAccessToken()
     {
         $this->auth_key = Yii::$app->security->generateRandomString();
@@ -184,7 +188,7 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
         $this->auth_key = Yii::$app->security->generateRandomString();
     }    
 
-    public function login($duration = 0, $slack = true)
+    public function login($duration = 0, $slack = true): bool
     {
         $isLogin = Yii::$app->user->login($this, $duration);
         if ($isLogin) {
@@ -196,12 +200,12 @@ class User extends \sky\yii\db\ActiveRecord implements \yii\web\IdentityInterfac
         return $isLogin;
     }
     
-    public function getIsOwner()
+    public function getIsOwner(): bool
     {
         return $this->id == Yii::$app->user->id;
     }
     
-    public function getIsActive()
+    public function getIsActive(): bool
     {
         return $this->status == static::STATUS_ACTIVE;
     }

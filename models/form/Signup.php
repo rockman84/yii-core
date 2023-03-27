@@ -3,6 +3,7 @@ namespace sky\yii\models\form;
 
 use sky\yii\models\User;
 use Yii;
+use yii\db\ActiveRecord;
 
 class Signup extends \yii\base\Model
 {
@@ -24,43 +25,48 @@ class Signup extends \yii\base\Model
             [['confirmPassword', 'password'], 'string', 'min' => 6],
             ['confirmPassword', 'compare', 'compareAttribute' => 'password'],
             ['email', 'trim'],
-            [['email'], 'checkEmail'],
             [['email'], 'filter', 'filter' => 'strtolower'],
         ];
     }
     
-    public function checkEmail($attribute, $params)
-    {
-        $user = User::findOne(['email' => $this->{$attribute}]);
-        if ($user) {
-            return $this->addError($attribute, 'Email sudah terdaftar.');
-        }
-    }
-    
     public function save()
     {
-
-        if ($this->validate()) {
-            $user = $this->getUser();
-            $user->load($this->getAttributes(), '');
-            $user->setPassword($this->password);
-            if ($user->save()) {
-                Yii::$app->user->login($user);
-                return $user;
-            }
+        if (!$this->validate()) {
+            return false;
         }
-        return false;
+        $user = $this->getUser();
+        $user->load($this->getAttributes(), '');
+        $user->setPassword($this->password);
+        if ($user->save()) {
+            try {
+                static::getUserWeb()->login($user);
+            } catch (\Exception $e) {
+                Yii::error($e->getMessage());
+            }
+            return $user;
+        }
+        $this->addErrors($user->errors);
     }
 
     /**
-     * @return User
+     * @return ActiveRecord
      * @throws \yii\base\InvalidConfigException
      */
     public function getUser()
     {
         if (!$this->_user) {
-            $this->_user = Yii::createObject(Yii::$app->user->identityClass);
+            $this->_user = static::getUserClass();
         }
         return $this->_user;
+    }
+
+    public static function getUserWeb()
+    {
+        return Yii::$app->user;
+    }
+
+    public static function getUserClass()
+    {
+        return Yii::createObject(static::getUserWeb()->identityClass);
     }
 }

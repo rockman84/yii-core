@@ -13,6 +13,7 @@ class m191122_091016_create_file_table extends Migration
      */
     public function safeUp()
     {
+        $this->binary(16);
         $this->createTable('{{%file}}', [
             'id' => $this->primaryKey(),
             'name' => $this->string()->notNull(),

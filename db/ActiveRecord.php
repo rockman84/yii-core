@@ -197,4 +197,29 @@ class ActiveRecord extends \yii\db\ActiveRecord
     {
         return static::find()->orderBy(['id' => SORT_DESC])->one();
     }
+
+    protected static function store(): ?\yii\caching\CacheInterface
+    {
+        return Yii::$app->cache;
+    }
+
+    public function getPrefixIdStore(): string
+    {
+        return static::tableName() . '-' . $this->getPrimaryKey();
+    }
+
+    public function setStore($key, $value, $duration = 3600, $dependency = null)
+    {
+        static::store()->set($this->getPrefixIdStore() . '-' . $key, $value, $duration, $dependency);
+    }
+
+    public function getStore($key)
+    {
+        static::store()->get($this->getPrefixIdStore() . '-' . $key);
+    }
+
+    public function removeStore($key)
+    {
+        static::store()->delete($this->getPrefixIdStore() . '-' . $key);
+    }
 }
